@@ -18,7 +18,7 @@ for label_name in label_name_list:
         lines = f1.readlines()
     # print(lines)
     if len(lines) > 1:
-        # print(lines[1])
+        print(label_name)
         # shutil.copy(label_file_name, './data/math_210421/mult-line_label/' + label_name)
         continue
     shutil.copy(label_file_name, output_label_dir + label_name)

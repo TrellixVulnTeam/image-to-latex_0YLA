@@ -13,7 +13,9 @@ mkdir -p image-to-latex/data/formula_labels
 mkdir -p image-to-latex/data/formula_images
 cd image-to-latex/data-preprocess/
 python data_filter.py
+rm -r -f '../data/formula_labels_oneline/'
 python no_chinese.py
+rm -r -f '../data/formula_labels_noerror/'
 python extract_image_according_to_label_list.py
 python data_preprocess_for_im2latex.py
 cd ..

@@ -64,7 +64,7 @@ for label_name in label_name_list:
 
     for token in token_list:
         if token not in vocab and token not in ['', ' ']:
-            # print(label_name, ':',end='')
+            print(label_name, ':',end='')
             # print(token)
             # chinese_token_list.append(token)
             have_chinese = True
