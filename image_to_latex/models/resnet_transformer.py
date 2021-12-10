@@ -34,9 +34,11 @@ class ResNetTransformer(nn.Module):
         resnet = torchvision.models.resnet18(pretrained=False)
         self.backbone = nn.Sequential(
             resnet.conv1,
-            resnet.bn1,
-            resnet.relu,
+            # nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+            resnet.bn1,  # nn.BatchNorm2d
+            resnet.relu,    # nn.ReLU
             resnet.maxpool,
+            # nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
             resnet.layer1,
             resnet.layer2,
             resnet.layer3,
@@ -46,6 +48,8 @@ class ResNetTransformer(nn.Module):
 
         # Decoder
         self.embedding = nn.Embedding(num_classes, self.d_model)
+        # 生成存储词典的嵌入向量的查找表
+        # （num_classes：词典中词的个数，d_model：每个词对应嵌入向量的维度）
         self.y_mask = generate_square_subsequent_mask(self.max_output_len)
         self.word_positional_encoder = PositionalEncoding1D(self.d_model, max_len=self.max_output_len)
         transformer_decoder_layer = nn.TransformerDecoderLayer(self.d_model, nhead, dim_feedforward, dropout)
@@ -168,7 +172,7 @@ class ResNetTransformer(nn.Module):
 
 def generate_square_subsequent_mask(size: int) -> Tensor:
     """Generate a triangular (size, size) mask."""
-    mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)
+    mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)    #‘==1’使得生成的tensor的dtype=torch.uint8
     mask = mask.float().masked_fill(mask == 0, float("-inf")).masked_fill(mask == 1, float(0.0))
     return mask
 

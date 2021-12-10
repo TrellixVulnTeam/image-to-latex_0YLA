@@ -31,9 +31,7 @@ def main(cfg: DictConfig):
     if cfg.callbacks.early_stopping:
         callbacks.append(EarlyStopping(**cfg.callbacks.early_stopping))
 
-    # logger: Optional[WandbLogger] = None
-    # if cfg.logger:
-    #     logger = WandbLogger(**cfg.logger)
+
     logger = TensorBoardLogger("tb_logs", name="image-to-latex")
 
     trainer = Trainer(**cfg.trainer, callbacks=callbacks, logger=logger)

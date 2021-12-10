@@ -1,4 +1,4 @@
-seed: 1234
+dseed: 1234
 
 project_path:
   path: '/kaggle/working/image-to-latex'
