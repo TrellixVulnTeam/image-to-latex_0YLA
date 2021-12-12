@@ -7,22 +7,22 @@ from pytorch_lightning import LightningModule
 
 from ..data.utils import Tokenizer
 from ..models import ResNetTransformer
-from .metrics import CharacterErrorRate
+from .metrics import CharacterErrorRate, ExactMatch
 
 
 class LitResNetTransformer(LightningModule):
     def __init__(
-        self,
-        d_model: int,
-        dim_feedforward: int,
-        nhead: int,
-        dropout: float,
-        num_decoder_layers: int,
-        max_output_len: int,
-        lr: float = 0.001,
-        weight_decay: float = 0.0001,
-        milestones: List[int] = [5],
-        gamma: float = 0.1,
+            self,
+            d_model: int,
+            dim_feedforward: int,
+            nhead: int,
+            dropout: float,
+            num_decoder_layers: int,
+            max_output_len: int,
+            lr: float = 0.001,
+            weight_decay: float = 0.0001,
+            milestones: List[int] = [5],
+            gamma: float = 0.1,
     ):
         super().__init__()
         self.save_hyperparameters()
@@ -48,6 +48,7 @@ class LitResNetTransformer(LightningModule):
         self.loss_fn = nn.CrossEntropyLoss(ignore_index=self.tokenizer.pad_index)
         self.val_cer = CharacterErrorRate(self.tokenizer.ignore_indices)
         self.test_cer = CharacterErrorRate(self.tokenizer.ignore_indices)
+        self.exact_match = ExactMatch(self.tokenizer.ignore_indices)
 
     def training_step(self, batch, batch_idx):
         imgs, targets = batch
@@ -64,13 +65,17 @@ class LitResNetTransformer(LightningModule):
 
         preds = self.model.predict(imgs)
         val_cer = self.val_cer(preds, targets)
+        val_match = self.exact_match(preds, targets)
         self.log("val/cer", val_cer)
+        self.log("val/match", val_match)
 
     def test_step(self, batch, batch_idx):
         imgs, targets = batch
         preds = self.model.predict(imgs)
         test_cer = self.test_cer(preds, targets)
+        test_match = self.exact_match(preds, targets)
         self.log("test/cer", test_cer)
+        self.log("test/match", test_match)
         return preds
 
     def test_epoch_end(self, test_outputs):
