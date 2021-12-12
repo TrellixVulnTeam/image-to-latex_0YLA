@@ -4,7 +4,6 @@ from typing import List
 import torch
 import torch.nn as nn
 from pytorch_lightning import LightningModule
-
 from ..data.utils import Tokenizer
 from ..models import ResNetTransformer
 from .metrics import CharacterErrorRate, ExactMatch
